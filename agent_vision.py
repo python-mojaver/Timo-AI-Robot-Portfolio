@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def publish(server, key, event):
+    # فقط رویداد و شناسه و امتیاز ارسال می‌شوند؛ تصویر مرجع وارد درخواست سلام نمی‌شود.
     payload = {field: event[field] for field in ('type', 'name', 'confidence')}
     req = request.Request(server + '/api/agent/host/recognition',
                           data=json.dumps(payload).encode('utf-8'),
@@ -95,6 +96,7 @@ def main(argv=None):
                                  for identity, refs in self.known_features.items()), reverse=True)
                 score, identity = scores[0]
                 # Do not assign an identity if two enrolled people match similarly.
+                # علاوه بر حداقل شباهت، فاصله با نفر دوم بررسی می‌شود تا تطبیق مبهم کنار گذاشته شود.
                 confident = score >= vision.RECOGNITION_THRESHOLD and (len(scores) == 1 or score - scores[1][0] >= 0.05)
                 if confident:
                     self._emit('PERSON_RECOGNIZED', identity, min(1.0, score))

@@ -10,6 +10,7 @@ STOP_COMMANDS = {"توقف", "بایست", "وایسا", "حرکت نکن", "ت�
 def navigation_target(text):
     value = normalize(text)
     # Anchored grammar: quoted questions, negation and explanatory prose are not actions.
+    # کل جمله باید با الگوی فرمان تطبیق کند؛ صرف اشاره به نام یک اتاق، فرمان حرکت نیست.
     match = re.fullmatch(r"(?:لطفا )?(?:(?:برو|حرکت کن)(?: به)?|(?:منو|من را|من رو) ببر(?: به)?|ببرم(?: به)?) (.+)", value)
     if not match:
         return None
@@ -24,6 +25,7 @@ def room_matches(room, target):
 def room_proposal(room):
     if not room["enabled"] or not room["map_name"]:
         return {"response": "این اتاق ثبت شده، اما نقشه و فعال‌بودن مقصد هنوز تأیید نشده؛ بخش «آموزش ایجنت» را بررسی کنید."}
+    # این بخش فقط درخواست ناوبری می‌سازد؛ ارسال و وضعیت واقعی حرکت بر عهدهٔ اپ و SDK است.
     return {"response": f"مقصد «{room['name']}» را پیدا کردم؛ درخواست حرکت را به اپ ربات می‌فرستم.",
             "action": {"type": "navigate", "room_id": room["id"], "name": room["name"],
                        "map_name": room["map_name"],
@@ -44,6 +46,7 @@ def direct_reply(text, session_id, source="text", store=None):
         return {"response": "نام اتاق را آماده کردم. در بخش آموزش، موقعیت فعلی ربات را دریافت و همراه نام نقشه بررسی کنید؛ سپس ذخیره کنید.",
                 "room_draft": {"name": "اتاق " + here.group(1)}}
     # Learning is a draft regardless of input source. Only a manager can persist it.
+    # آموزش از گفتگو ابتدا پیش‌نویس است و بدون تأیید مدیر وارد حافظهٔ دائمی نمی‌شود.
     match = re.match(r"^(?:یاد بگیر|یادت باشه|به خاطر بسپار)(?:\s+که)?\s*[:：]?\s+(.+)$", text, re.S)
     if match:
         body = match.group(1).strip()

@@ -13,6 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 
 def normalize(value):
+    # حروف عربی، فاصله‌ها و رقم‌ها را یکسان می‌کنیم تا نام و عبارت مشابه قابل تطبیق باشند.
     value = str(value).lower().replace("ي", "ی").replace("ك", "ک").replace("\u200c", " ")
     value = value.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
     return " ".join(re.sub(r"[^\w\s]", " ", value).split())
@@ -49,6 +50,7 @@ class AgentStore:
             """)
             if not db.execute("SELECT 1 FROM meta WHERE key='initial-room'").fetchone():
                 # Inert public example: an operator must supply and verify the map and pose.
+                # مقصد نمونه غیرفعال است؛ مختصات و نقشه باید برای محیط واقعی تنظیم و بررسی شوند.
                 db.execute("""INSERT INTO rooms(name,name_key,aliases,map_name,x,y,z,rotation,enabled,updated_at)
                   VALUES(?,?,?,?,?,?,?,?,?,?)""", ("اتاق نمونه", normalize("اتاق نمونه"),
                     json.dumps(["نمونه"], ensure_ascii=False),
@@ -64,6 +66,7 @@ class AgentStore:
             yield db
             db.commit()
         except Exception:
+            # اگر بخشی از عملیات شکست بخورد، همان تراکنش به وضعیت پیش از تغییر برمی‌گردد.
             db.rollback()
             raise
         finally:
@@ -189,6 +192,7 @@ class AgentStore:
             title = set(normalize(row["title"]).split()) - stopwords
             body = set(normalize(row["body"]).split()) - stopwords
             overlap = len(keys & title)
+            # تطبیق واژه در عنوان وزن بیشتری دارد؛ این بازیابی واژه‌ای است، نه آموزش مدل.
             score = overlap * 4 + len(keys & body)
             if keys and (overlap > 0 or len(keys & body) >= 2):
                 scored.append((score, row))
@@ -205,6 +209,7 @@ class AgentStore:
         return matches[0] if len(matches) == 1 else None
 
     def propose(self, session, kind, payload):
+        # پیش‌نویس پنج دقیقه اعتبار دارد و هنگام تأیید باید به همان جلسه تعلق داشته باشد.
         proposal_id = secrets.token_urlsafe(24)
         with self.connect() as db:
             db.execute("DELETE FROM proposals WHERE expires_at<? OR session_id=?", (time.time(), session))
@@ -218,6 +223,7 @@ class AgentStore:
     def confirm_memory(self, proposal_id, session):
         # One transaction: consuming a confirmation twice never writes two memories.
         with self.connect() as db:
+            # خواندن و مصرف پیش‌نویس در یک تراکنش انجام می‌شود تا تأیید تکراری، رکورد تکراری نسازد.
             db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT * FROM proposals WHERE id=? AND session_id=? AND expires_at>?",
                              (proposal_id, session, time.time())).fetchone()

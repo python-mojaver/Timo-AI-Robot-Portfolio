@@ -13,9 +13,11 @@ router = APIRouter(prefix="/api/agent")
 
 
 def require_manager(request: Request):
+    # کلید مدیریت از هدر خوانده می‌شود؛ آن را در آدرس صفحه یا لینک قرار نمی‌دهیم.
     token = request.headers.get("X-Agent-Key", "")
     if not hmac.compare_digest(token.encode("utf-8"), admin_key().encode("utf-8")):
         raise HTTPException(401, "کلید مدیر صحیح نیست.")
+    # اگر مرورگر مبدأ را فرستاده باشد، باید با میزبان همین درخواست یکسان باشد.
     origin = request.headers.get("Origin")
     if origin and urlsplit(origin).netloc != request.headers.get("host"):
         raise HTTPException(403, "درخواست باید از همین سرور ارسال شود.")
@@ -65,6 +67,7 @@ def confirm(data: Confirmation):
 
 @router.post("/{table}", dependencies=[Depends(require_manager)])
 def create(table: str, record: Record):
+    # فقط نوع‌های مشخص‌شده به متد ذخیره‌سازی وصل می‌شوند؛ نام دلخواه متد از کاربر پذیرفته نیست.
     methods = {"memories": "save_memory", "rooms": "save_room", "skills": "save_skill"}
     if table not in methods:
         raise HTTPException(404, "نوع مورد پیدا نشد.")
@@ -73,6 +76,7 @@ def create(table: str, record: Record):
 
 @router.put("/{table}/{item_id}", dependencies=[Depends(require_manager)])
 def update(table: str, item_id: int, record: Record):
+    # فقط نوع‌های مشخص‌شده به متد ذخیره‌سازی وصل می‌شوند؛ نام دلخواه متد از کاربر پذیرفته نیست.
     methods = {"memories": "save_memory", "rooms": "save_room", "skills": "save_skill"}
     if table not in methods:
         raise HTTPException(404, "نوع مورد پیدا نشد.")

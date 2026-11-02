@@ -7,6 +7,7 @@
   const Native=window.AndroidRobot;
   const syncWaiters=new Map();
   let syncSerial=0;
+  // پیش از ارسال حرکت، نسخهٔ نقشه را از سرور می‌گیریم و منتظر تأیید اپ اندروید می‌مانیم.
   async function syncMap(){
     if(!Native?.requestAgentNavigation)throw new Error('همگام‌سازی نقشه فقط داخل اپ ربات انجام می‌شود.');
     const abort=new AbortController(), timer=setTimeout(()=>abort.abort(),5000);
@@ -33,6 +34,7 @@
   function button(box,text,callback,secondary=false){const b=document.createElement('button');b.textContent=text;b.type='button';if(secondary)b.className='secondary';b.addEventListener('click',callback);box.append(b);return b;}
   const navStatus=document.getElementById('agentMotionStatus');
   function stop(){
+    // افزایش شمارنده، فرمانی را که هنوز منتظر همگام‌سازی است از اعتبار می‌اندازد.
     ++commandEpoch;
     motionMessage=null;
     if(currentNotice){currentNotice.remove();currentNotice=null;}
@@ -74,6 +76,7 @@
           // Awaiting the network must not let a now-hidden page start motion.
           if(document.hidden)throw new Error('صفحهٔ گفتگو بسته شد؛ فرمان را دوباره بدهید.');
           if(result.action.map_name!==cfg.map_name)throw new Error('نقشهٔ مقصد «'+result.action.map_name+'» با نقشهٔ مشترک «'+cfg.map_name+'» یکی نیست؛ مقصد را در آموزش بررسی کنید.');
+          // ارسال درخواست به پل اندروید به معنی رسیدن ربات به مقصد نیست.
           Native.requestAgentNavigation(JSON.stringify({...result.action,map_revision:cfg.revision}));
           button(box,'توقف',stop,true);
         }catch(error){if(epoch!==commandEpoch)return;navStatus.textContent=error.message||'ارتباط با اپ ربات برقرار نشد.';if(motionMessage)motionMessage.textContent=navStatus.textContent;}

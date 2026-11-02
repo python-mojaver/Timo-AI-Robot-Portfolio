@@ -5,6 +5,7 @@ class PrimeMicrophone {
         this.options = options;
         this.threshold = 0.015;
         this.silenceMs = 950;
+        // کمی صدای پیش از تشخیص شروع گفتار حفظ می‌شود تا ابتدای کلمه قطع نشود.
         this.preRollMs = 450;
         this.maxSpeechMs = 20000;
         this.playbackActive = false;
@@ -75,9 +76,11 @@ class PrimeMicrophone {
     }
     ingest(input) {
         if (!this.running || !input.length) return;
+        // صدای بلندگوی ربات و دنبالهٔ کوتاه پژواک وارد قطعهٔ جدید گفتار نمی‌شوند.
         if (this.playbackActive || Date.now() < this.listenAfter) return;
         const samples = new Float32Array(input);
         const ms = samples.length * 1000 / this.sampleRate;
+        // در حالت دستی، پایان ضبط با کاربر یا سقف مدت است؛ تشخیص سکوت تصمیم‌گیر نیست.
         if (this.options.manual) {
             this.parts.push(samples);
             this.elapsedMs += ms;

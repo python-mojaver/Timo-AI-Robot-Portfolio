@@ -7,6 +7,7 @@ from database import DB_PATH, create_tables, get_connection
 ROOT = Path(__file__).resolve().parent
 
 def main():
+    # دادهٔ نمونه فقط برای پایگاه تازه است؛ کاتالوگ موجود را بازنویسی نمی‌کنیم.
     if DB_PATH.exists():
         print("Catalog already exists; no data changed:", DB_PATH)
         return

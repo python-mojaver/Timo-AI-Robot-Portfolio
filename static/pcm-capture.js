@@ -12,8 +12,10 @@ class PrimePCMCapture extends AudioWorkletProcessor {
         for (let i = 0; i < frames; i++) {
             let sample = 0;
             for (const channel of channels) sample += channel[i] || 0;
+            // کانال‌ها را میانگین می‌گیریم تا یک جریان تک‌کاناله با همان نرخ نمونه‌برداری داشته باشیم.
             this.buffer[this.offset++] = sample / channels.length;
             if (this.offset === this.buffer.length) {
+                // مالکیت بافر منتقل می‌شود؛ برای ادامهٔ ضبط باید بافر تازه بسازیم.
                 this.port.postMessage(this.buffer, [this.buffer.buffer]);
                 this.buffer = new Float32Array(2048);
                 this.offset = 0;

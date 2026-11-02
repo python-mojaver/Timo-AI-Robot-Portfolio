@@ -59,6 +59,7 @@ def _audio_bytes(audio):
 
 
 def _audio_type(data):
+    # فرمت را از امضای بایت‌ها می‌خوانیم؛ پسوند نام فایل به‌تنهایی قابل اتکا نیست.
     if data[:4] == b"RIFF" and data[8:12] == b"WAVE":
         return "speech.wav", "audio/wav"
     if data[:4] == b"fLaC":
@@ -138,11 +139,13 @@ def _groq_transcribe(audio):
         fields["prompt"] = PERSIAN_PROMPT.strip()
     debug_id = uuid.uuid4().hex[:12] if DEBUG else ""
     if DEBUG:
+        # حالت عیب‌یابی جزئیات قطعه‌های تشخیص را می‌گیرد؛ ممکن است متن گفتار در لاگ ثبت شود.
         fields["response_format"] = "verbose_json"
         _debug_log(debug_id, "input", {**inspect_wav(data), "model": GROQ_MODEL,
                                      "language": "fa", "temperature": 0,
                                      "prompt_len": len(PERSIAN_PROMPT.strip()),
                                      "prompt_sha256": hashlib.sha256(PERSIAN_PROMPT.strip().encode("utf-8")).hexdigest()})
+    # بدنهٔ درخواست Groq در حافظه ساخته می‌شود؛ این مسیر فایل صوتی روی دیسک نمی‌نویسد.
     chunks = []
     for name, value in fields.items():
         chunks.append((f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n').encode("utf-8"))
@@ -190,6 +193,7 @@ def _groq_transcribe(audio):
 
 def _local_transcribe(audio):
     global model
+    # مدل محلی فقط در حالت local و در اولین درخواست بارگذاری می‌شود.
     if model is None:
         from faster_whisper import WhisperModel
         print("Loading local Whisper model...", flush=True)
@@ -212,6 +216,7 @@ def transcribe_audio(audio):
     try:
         if PROVIDER == "groq":
             # No CPU inference lock and no implicit fallback to a slow local model.
+            # خطای Groq باعث دانلود یا اجرای خودکار مدل محلی نمی‌شود.
             return _groq_transcribe(audio)
         if PROVIDER == "local":
             with _transcribe_lock:

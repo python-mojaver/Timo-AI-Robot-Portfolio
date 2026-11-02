@@ -55,6 +55,7 @@ class HostBroker:
 
     def pair(self, session_id):
         with self.lock:
+            # هر اتصال تازه، توکن قبلی و پیام در انتظارِ جلسهٔ قبلی را کنار می‌گذارد.
             token = secrets.token_urlsafe(32)
             self.target = {'session_id': session_id, 'token': token, 'seen': self.clock()}
             self._finish_speech('cancelled')
@@ -84,6 +85,7 @@ class HostBroker:
             now = self.clock()
             self._expire_pending()
             fingerprint = hashlib.sha256(text.encode('utf-8')).hexdigest()
+            # شناسهٔ تکراری با متن یکسان دوباره صف نمی‌شود؛ متن متفاوت با همان شناسه خطاست.
             previous = self.speech_receipts.get(request_id)
             if previous:
                 if previous['fingerprint'] != fingerprint:
@@ -118,6 +120,7 @@ class HostBroker:
                 return {'status': 'ignored', 'reason': 'unregistered_person'}
             if not self.target or now - self.target['seen'] > 20:
                 return {'status': 'ignored', 'reason': 'no_active_robot'}
+            # فاصلهٔ پنج‌دقیقه‌ای، تکرار سلام به یک فرد را پس از تأیید یا تلاش پخش محدود می‌کند.
             if now - self.last_greeted.get(identity, -1000000) < 300:
                 return {'status': 'ignored', 'reason': 'cooldown'}
             if self.pending and self.pending['expires'] > now:
@@ -158,6 +161,7 @@ class HostBroker:
             if (not self.pending or self.pending['id'] != event_id or
                     self.pending['expires'] <= self.clock() or self.pending.get('claimed')):
                 return {'status': 'stale'}
+            # پیش از پخش، پیام رزرو می‌شود تا چند بار از صف دریافت و اجرا نشود.
             self.pending['claimed'] = True
             self._finish_speech('playing')
             self.pending['expires'] = self.clock() + 120

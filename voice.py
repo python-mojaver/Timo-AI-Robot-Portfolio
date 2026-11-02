@@ -51,6 +51,7 @@ def generate_voice(text: str):
 
     # برای یک متن ثابت،
     # همیشه همان فایل استفاده شود
+    # این هش فقط نام فایل کش را می‌سازد و برای رمزنگاری یا احراز هویت استفاده نمی‌شود.
     text_hash = hashlib.md5(
         text.encode("utf-8")
     ).hexdigest()

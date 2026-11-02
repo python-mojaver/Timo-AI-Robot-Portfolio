@@ -11,6 +11,7 @@ DB_PATH = Path(os.getenv("TIMO_CATALOG_DB") or BASE_DIR / "products.db")
 def get_connection():
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
+    # نام ستون‌ها را کنار مقدارها نگه می‌داریم تا لایهٔ گفتگو به ترتیب ستون وابسته نباشد.
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -62,6 +63,7 @@ def search_products(query, limit=10):
     conn = get_connection()
     cursor = conn.cursor()
 
+    # عبارت جستجو به‌صورت پارامتر SQL فرستاده می‌شود، نه بخشی از متن دستور.
     like = f"%{query}%"
 
     cursor.execute("""

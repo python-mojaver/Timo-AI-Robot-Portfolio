@@ -19,6 +19,7 @@ from response_language import validate_language, prompt_for, fixed_reply, needs_
 BASE_DIR = Path(__file__).resolve().parent
 MAX_MODEL_CALLS = 4
 
+# مدل فقط به ابزارهای این فهرست دسترسی دارد؛ نام ابزار و ورودی آن در زمان اجرا هم بررسی می‌شوند.
 TOOLS = [
     {'type':'function','function':{'name':'search_products',
       'description':'Search the operator-provided product catalog. Use for product names, codes, prices and recorded availability. Never invent products or current market prices.',
@@ -74,6 +75,7 @@ class ChatRuntime:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self.connection = sqlite3.connect(self.path, check_same_thread=False, timeout=30)
         self.connection.execute('PRAGMA journal_mode=WAL')
+        # وضعیت گفتگو در SQLite ذخیره می‌شود تا با راه‌اندازی مجدد سرور از بین نرود.
         self.checkpointer = SqliteSaver(self.connection)
         self.checkpointer.setup()
         self.provider = provider or os.getenv('TIMO_CHAT_PROVIDER','n8n').strip().lower()
@@ -82,8 +84,10 @@ class ChatRuntime:
         self.store = store
         self.model = model
         # Striped per-thread locks prevent concurrent updates to the same checkpoint.
+        # درخواست‌های یک جلسه به‌ترتیب اجرا می‌شوند؛ تعداد قفل‌ها ثابت است.
         self.locks = [threading.RLock() for _ in range(64)]
         self.model_lock = threading.Lock()
+        # مسیر گفتگو: فرمان مستقیم، سپس مدل و ابزارها؛ در پایان پاسخ نهایی آماده می‌شود.
         builder = StateGraph(ChatState)
         builder.add_node('commands', self.commands)
         builder.add_node('model', self.call_model)
@@ -92,6 +96,7 @@ class ChatRuntime:
         builder.add_edge(START, 'commands')
         builder.add_conditional_edges('commands', lambda s: 'finish' if s.get('result') else 'model', {'finish':'finish','model':'model'})
         builder.add_conditional_edges('model', lambda s: 'tools' if isinstance(s['messages'][-1],AIMessage) and s['messages'][-1].tool_calls else 'finish', {'tools':'tools','finish':'finish'})
+        # سقف فراخوانی مدل جلوی تکرار بی‌پایان چرخهٔ مدل و ابزار را می‌گیرد.
         builder.add_conditional_edges('tools', lambda s: 'model' if s.get('model_calls',0)<MAX_MODEL_CALLS else 'finish', {'model':'model','finish':'finish'})
         builder.add_edge('finish', END)
         self.graph = builder.compile(checkpointer=self.checkpointer)
@@ -147,6 +152,7 @@ class ChatRuntime:
         if not isinstance(args, dict): raise ValueError('Invalid arguments')
         schemas = {x['function']['name']:x['function']['parameters'] for x in TOOLS}
         if name not in schemas: raise ValueError('Unknown tool')
+        # خروجی مدل را معتبر فرض نمی‌کنیم؛ کلیدها، نوع و طول ورودی باید با قرارداد ابزار یکی باشند.
         schema = schemas[name]
         if set(args) != set(schema.get('required',[])): raise ValueError('Unexpected arguments')
         for key,value in args.items():
@@ -171,6 +177,7 @@ class ChatRuntime:
         matches = [r for r in rooms if agent_engine.room_matches(r,target)]
         if len(matches)!=1: return {'status':'destination_not_found'}, None
         room = matches[0]
+        # مقصد پیشنهادی مدل باید با فرمان صریح همین نوبت کاربر تطبیق داشته باشد.
         current = agent_engine.navigation_target(state['text'])
         if not current or not agent_engine.room_matches(room,current):
             return {'status':'explicit_request_needed','destination':room['name'],
@@ -181,6 +188,7 @@ class ChatRuntime:
     def run_tools(self, state):
         messages = []
         result = state.get('result') or {}
+        # در هر پاسخ مدل، حداکثر هشت ابزار اجرا می‌شود؛ خطا هم به شکل نتیجهٔ ابزار برمی‌گردد.
         calls = state['messages'][-1].tool_calls
         for index,call in enumerate(calls):
             try:
@@ -236,6 +244,7 @@ class ChatRuntime:
             added = [last.model_copy(update={'content':clean})]
         # Keep complete recent turns; never cut between a tool call and its result.
         history=state['messages']+added
+        # شش نوبت اخیر کاربر را نگه می‌داریم و جفت فراخوانی ابزار و نتیجه‌اش را نصف نمی‌کنیم.
         human_indices=[i for i,m in enumerate(history) if isinstance(m,HumanMessage)]
         cutoff=human_indices[-6] if len(human_indices)>6 else 0
         removals=[RemoveMessage(id=m.id) for m in history[:cutoff] if m.id]
@@ -246,6 +255,7 @@ class ChatRuntime:
         config={'configurable':{'thread_id':session_id},'recursion_limit':30}
         if normalize(text) in agent_engine.STOP_COMMANDS:
             # Cancellation must not wait behind a slow model call on this thread.
+            # فرمان توقف منتظر پاسخ کند مدل نمی‌ماند؛ تأیید توقف فیزیکی همچنان با ربات است.
             state=self.control_graph.invoke({'messages':[HumanMessage(content=text)],'text':text,
                                              'session_id':session_id,'input_source':source,'response_language':response_language,
                                              'result':{},'face':{},'model_calls':0})

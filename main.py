@@ -7,6 +7,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
+# تنظیمات را پیش از واردکردن ماژول‌های وابسته می‌خوانیم تا مسیرها و سرویس‌ها درست انتخاب شوند.
 load_dotenv(BASE_DIR / ".env")
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -49,6 +50,7 @@ async def log_stage_duration(request: Request, call_next):
     return response
 
 # Create missing schemas without replacing existing data.
+# فقط جدول‌های ناموجود ساخته می‌شوند؛ اطلاعات قبلی کاتالوگ جایگزین نمی‌شوند.
 create_tables()
 get_store()
 admin_key()
@@ -92,9 +94,11 @@ def prepare_speech(data: StreamSpeakRequest):
 @app.get('/api/speak/stream/{token}')
 async def stream_speech(token: str):
     if len(token)!=48 or any(c not in '0123456789abcdef' for c in token):raise HTTPException(404,'Audio not found')
+    # هر توکن فقط یک بار مصرف می‌شود؛ درخواست منقضی‌شده باید دوباره آماده شود.
     job=voice_stream.take(token)
     if job is None:raise HTTPException(404,'Audio expired; prepare again')
     stream=voice_stream.audio_chunks(job)
+    # پیش از شروع پاسخ استریم، اولین بخش صدا را می‌گیریم تا خطای سرویس قابل گزارش باشد.
     try:first=await asyncio.wait_for(anext(stream),timeout=15)
     except Exception as exc:
         await stream.aclose()
@@ -135,6 +139,7 @@ def chat(data: ChatRequest):
 
     try:
         print("[CHAT-LANGUAGE] response_language=" + data.response_language, flush=True)
+        # شناسهٔ جلسه، حافظهٔ همین گفتگو را از گفتگوهای دیگر جدا نگه می‌دارد.
         return agent_chat(message, data.session_id, data.input_source, response_language=data.response_language)
     except ValueError as exc:
         raise HTTPException(400, str(exc)) from exc
@@ -195,6 +200,7 @@ async def transcribe(request: Request):
             raise HTTPException(413, "حجم صدا بیشتر از ۲۴ مگابایت است.")
         if not audio_bytes:
             raise HTTPException(400, "صدای دریافتی خالی است.")
+        # تماس مسدودکنندهٔ تشخیص گفتار را خارج از حلقهٔ رویداد اجرا می‌کنیم.
         text = await run_in_threadpool(transcribe_audio, audio_bytes)
         if not text:
             return {"status": "error", "text": "", "message": "صدایی تشخیص داده نشد؛ دوباره صحبت کنید."}
