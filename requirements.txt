@@ -1,0 +1,10 @@
+# Main FastAPI + LangGraph application, using Groq or n8n.
+fastapi==0.141.1
+starlette==1.6.0
+pydantic==2.13.4
+uvicorn==0.52.3
+Jinja2==3.1.6
+python-multipart==0.0.32
+python-dotenv==1.2.3
+edge-tts==7.2.8
+-r requirements-langgraph.txt

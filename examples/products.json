@@ -1,0 +1,35 @@
+[
+  {
+    "category": "روشنایی نمایشی",
+    "product_code": "DEMO-LAMP-01",
+    "product_name": "چراغ رومیزی نمونه",
+    "color": "سفید",
+    "size": "کوچک",
+    "description": "دادهٔ ساختگی برای نمایش کاتالوگ؛ قابل فروش نیست.",
+    "price_rial": 15000000,
+    "price_toman": 1500000,
+    "available": 1
+  },
+  {
+    "category": "روشنایی نمایشی",
+    "product_code": "DEMO-LAMP-02",
+    "product_name": "چراغ ایستاده نمونه",
+    "color": "مشکی",
+    "size": "بزرگ",
+    "description": "قیمت و موجودی صرفاً نمونه و ساختگی هستند.",
+    "price_rial": 25000000,
+    "price_toman": 2500000,
+    "available": 1
+  },
+  {
+    "category": "لوازم نمایشی",
+    "product_code": "DEMO-DESK-01",
+    "product_name": "میز کار نمونه",
+    "color": "قهوه‌ای",
+    "size": "متوسط",
+    "description": "این رکورد متعلق به کاتالوگ واقعی شرکت نیست.",
+    "price_rial": 40000000,
+    "price_toman": 4000000,
+    "available": 0
+  }
+]

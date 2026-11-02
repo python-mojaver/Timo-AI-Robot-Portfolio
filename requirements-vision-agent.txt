@@ -1,0 +1,3 @@
+# Install only when the existing project environment cannot import cv2 or numpy.
+opencv-python>=4.10,<6
+numpy>=1.26,<3

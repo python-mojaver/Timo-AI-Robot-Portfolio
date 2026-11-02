@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>آزمایش صدای میکروفن</title>
+<style>
+body{font:16px/1.9 Tahoma,Arial;background:#f3f6fb;color:#162235;margin:0;padding:24px}main{max-width:820px;margin:auto;background:white;border:1px solid #dce4ee;border-radius:18px;padding:28px}h1{font-size:24px;margin-top:0}button,select{font:inherit;padding:9px 14px;border-radius:9px;border:1px solid #b8c7d8;margin:5px 0}button{background:#225fe8;color:white;cursor:pointer}button:disabled{opacity:.5;cursor:default}select{max-width:100%;background:white;color:inherit}label{display:block;margin-top:12px}.hint{color:#53657c}#status{min-height:32px;color:#174e8d}article{border-top:1px solid #dce4ee;padding-top:16px;margin-top:20px}audio{display:block;width:100%;margin:10px 0}a{color:#225fe8}pre{direction:ltr;text-align:left;white-space:pre-wrap;font-size:12px}blockquote{background:#edf4ff;border-radius:10px;margin:16px 0;padding:14px}#stop{background:#aa233b}
+</style>
+<main>
+<a href="/">بازگشت به گفتگو</a>
+<h1>آزمایش صدای میکروفن لپ‌تاپ</h1>
+<p>هنگام این آزمایش، گفتگوی صوتی تب‌های دیگر را متوقف کنید. جمله زیر را با صدای عادی بگویید؛ ضبط پس از ۶ ثانیه تمام می‌شود.</p>
+<blockquote>چه خبر؟ چیکار می‌کنی؟ من دارم میکروفن را آزمایش می‌کنم.</blockquote>
+<label>میکروفن<br><select id="device"><option value="">میکروفن پیش‌فرض مرورگر</option></select></label>
+<label>حالت ضبط<br><select id="profile"><option value="natural">صدای طبیعی — بدون فیلترهای صوتی مرورگر</option><option value="processed">پردازش مرورگر — حالت قبلی برای مقایسه</option></select></label>
+<p class="hint">فایل کامل ضبط می‌شود؛ سکوت و مکث جمله در این صفحه باعث قطع ضبط نمی‌شود. هیچ پاسخ صوتی در این آزمایش پخش نخواهد شد.</p>
+<button id="record">ضبط ۶ ثانیه‌ای</button> <button id="stop" disabled>پایان ضبط</button>
+<p id="status" aria-live="polite">آماده ضبط</p>
+<div id="recordings"></div>
+<hr><label>آزمایش فایل ضبط‌شده در ویندوز یا فایل قبلی برنامه<br><input id="existing" type="file" accept="audio/*,.wav,.m4a"></label>
+<p class="hint">بعد از انتخاب فایل، همان فایل را می‌توانید پخش یا برای تشخیص متن ارسال کنید.</p>
+</main>
+<script src="/static/microphone.js?v=voice2"></script>
+<script src="/static/mic-check.js?v=voice2"></script>
+</html>

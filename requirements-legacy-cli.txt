@@ -1,0 +1,6 @@
+# Optional scripts listen.py / realtime_voice.py / timo_runtime_voice.py.
+# The main FastAPI application does not need these packages.
+numpy>=1.26,<3
+sounddevice>=0.5,<1
+SpeechRecognition>=3.10,<4
+pygame>=2.6,<3

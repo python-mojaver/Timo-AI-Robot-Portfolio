@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>دستیار فروش هوشمند HTN HOME</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #f7faff, #eaf2fb);
+            color: #101828;
+        }
+
+        .app {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            background: #fff;
+        }
+
+        /* ================= ROBOT ================= */
+
+        .robot-panel {
+            background: linear-gradient(180deg, #f5faff, #e7f2ff);
+            border-left: 1px solid #dfe8f1;
+            padding: 18px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-title {
+            text-align: center;
+        }
+
+        .robot-title h2 {
+            margin: 0;
+            font-size: 23px;
+        }
+
+        .robot-title p {
+            margin: 6px 0 12px;
+            color: #667085;
+            font-size: 13px;
+        }
+
+        .robot-face {
+            width: 185px;
+            height: 155px;
+
+            background: #0d0f13;
+            border-radius: 44% 44% 38% 38% / 38% 38% 46% 46%;
+
+            position: relative;
+
+            box-shadow:
+                inset 0 0 0 6px rgba(255,255,255,.05),
+                0 15px 30px rgba(0,0,0,.15);
+        }
+
+        .eye {
+            position: absolute;
+            top: 45px;
+
+            width: 43px;
+            height: 43px;
+
+            border-radius: 50%;
+
+            background:
+                radial-gradient(
+                    circle at 35% 30%,
+                    white 0 10%,
+                    #dff3ff 11% 22%,
+                    #2d9cff 23% 58%,
+                    #0f67bd 59% 100%
+                );
+
+            box-shadow: 0 0 18px rgba(45,156,255,.5);
+        }
+
+        .eye.left {
+            left: 38px;
+        }
+
+        .eye.right {
+            right: 38px;
+        }
+
+        .cheek {
+            position: absolute;
+            top: 98px;
+
+            width: 25px;
+            height: 8px;
+
+            border-radius: 50%;
+            background: #ff5d73;
+        }
+
+        .cheek.left {
+            left: 27px;
+        }
+
+        .cheek.right {
+            right: 27px;
+        }
+
+        .smile {
+            position: absolute;
+
+            left: 50%;
+            top: 94px;
+
+            transform: translateX(-50%);
+
+            width: 22px;
+            height: 12px;
+
+            border-bottom: 3px solid #1aa3ff;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .robot-body {
+            width: 155px;
+            height: 175px;
+
+            margin-top: -3px;
+
+            position: relative;
+
+            background: linear-gradient(#fff, #eef2f6);
+
+            border-radius:
+                42% 42% 22% 22% /
+                18% 18% 16% 16%;
+
+            box-shadow:
+                0 14px 28px rgba(30,64,175,.12),
+                inset 0 0 0 1px #e5e7eb;
+        }
+
+        .robot-body::before {
+            content: "";
+
+            position: absolute;
+
+            top: 16px;
+            left: 31px;
+
+            width: 93px;
+            height: 95px;
+
+            background: #111317;
+
+            border-radius:
+                42% 42% 36% 36% /
+                34% 34% 42% 42%;
+        }
+
+        .robot-body::after {
+            content: "HTN HOME";
+
+            position: absolute;
+
+            bottom: 20px;
+            left: 0;
+            right: 0;
+
+            text-align: center;
+
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .online {
+            margin-top: 12px;
+            padding: 8px 14px;
+
+            background: rgba(255,255,255,.8);
+
+            border: 1px solid #dce7f2;
+            border-radius: 14px;
+
+            font-size: 12px;
+            color: #475467;
+        }
+
+        .online-dot {
+            display: inline-block;
+
+            width: 9px;
+            height: 9px;
+
+            margin-left: 6px;
+
+            border-radius: 50%;
+
+            background: #22c55e;
+        }
+
+        /* ================= CHAT ================= */
+
+        .chat-panel {
+            min-width: 0;
+            min-height: 0;
+
+            display: flex;
+            flex-direction: column;
+
+            background: #fff;
+        }
+
+        .header {
+            flex-shrink: 0;
+
+            padding: 15px 25px 10px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 27px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            color: #7a8699;
+            font-size: 13px;
+        }
+
+        .mini-bot {
+            width: 55px;
+            height: 45px;
+
+            background: #111317;
+
+            border-radius: 17px;
+
+            position: relative;
+        }
+
+        .mini-bot::before,
+        .mini-bot::after {
+            content: "";
+
+            position: absolute;
+            top: 14px;
+
+            width: 10px;
+            height: 10px;
+
+            background: #2d9cff;
+            border-radius: 50%;
+        }
+
+        .mini-bot::before {
+            left: 13px;
+        }
+
+        .mini-bot::after {
+            right: 13px;
+        }
+
+        #status {
+            flex-shrink: 0;
+
+            min-height: 30px;
+
+            padding: 7px 25px;
+
+            color: #16803c;
+            font-size: 13px;
+        }
+
+        .messages {
+            flex: 1;
+            min-height: 0;
+
+            overflow-y: auto;
+
+            padding: 15px 25px;
+
+            background:
+                radial-gradient(
+                    circle at 80% 20%,
+                    rgba(59,130,246,.05),
+                    transparent 30%
+                );
+        }
+
+        .message-row {
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .message-row.bot {
+            justify-content: flex-end;
+        }
+
+        .message-row.user {
+            justify-content: flex-start;
+        }
+
+        .message {
+            max-width: 72%;
+
+            padding: 11px 15px;
+
+            border-radius: 16px;
+
+            font-size: 15px;
+            line-height: 1.7;
+
+            box-shadow: 0 4px 14px rgba(15,23,42,.06);
+        }
+
+        .message.bot {
+            background: #fff;
+            border: 1px solid #e6ebf1;
+        }
+
+        .message.user {
+            background: #dfeeff;
+        }
+
+        .avatar {
+            width: 38px;
+            height: 32px;
+
+            flex-shrink: 0;
+
+            background: #111317;
+
+            border-radius: 13px;
+
+            position: relative;
+        }
+
+        .avatar::before,
+        .avatar::after {
+            content: "";
+
+            position: absolute;
+
+            top: 10px;
+
+            width: 7px;
+            height: 7px;
+
+            background: #2d9cff;
+            border-radius: 50%;
+        }
+
+        .avatar::before {
+            left: 9px;
+        }
+
+        .avatar::after {
+            right: 9px;
+        }
+
+        /* ================= CONTROLS ================= */
+
+        .controls {
+            flex-shrink: 0;
+
+            padding: 10px 20px 12px;
+
+            border-top: 1px solid #edf0f4;
+
+            background: #fff;
+        }
+
+        .voice-controls {
+            display: flex;
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 8px;
+        }
+
+        button {
+            border: none;
+            border-radius: 13px;
+
+            cursor: pointer;
+
+            font-family: inherit;
+        }
+
+        #startBtn {
+            min-width: 170px;
+
+            padding: 12px 16px;
+
+            background: linear-gradient(135deg, #1688ff, #2563eb);
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            box-shadow: 0 8px 20px rgba(37,99,235,.22);
+        }
+
+        #stopBtn {
+            display: none;
+
+            min-width: 170px;
+
+            padding: 12px 16px;
+
+            background: #ef4444;
+
+            color: white;
+
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .wave {
+            flex: 1;
+
+            height: 36px;
+
+            border-radius: 12px;
+
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    #318cff 0 4px,
+                    transparent 4px 10px
+                );
+
+            opacity: .15;
+        }
+
+        #chatForm {
+            display: flex;
+            gap: 9px;
+        }
+
+        #messageInput {
+            flex: 1;
+
+            min-width: 0;
+
+            padding: 11px 15px;
+
+            border: 1px solid #d9e1ea;
+            border-radius: 13px;
+
+            outline: none;
+
+            font-family: inherit;
+            font-size: 14px;
+
+            background: #fbfcfe;
+        }
+
+        #messageInput:focus {
+            border-color: #60a5fa;
+        }
+
+        .send-btn {
+            width: 52px;
+
+            background: #2563eb;
+
+            color: white;
+
+            font-size: 18px;
+        }
+
+        .listening {
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                transform: scale(1.04);
+            }
+        }
+
+        /* نمایشگرهای کوچک‌تر */
+
+        @media (max-width: 900px) {
+            .app {
+                grid-template-columns: 240px 1fr;
+            }
+
+            .robot-face {
+                width: 160px;
+                height: 135px;
+            }
+
+            .robot-body {
+                width: 135px;
+                height: 150px;
+            }
+        }
+
+        @media (max-height: 650px) {
+            .robot-face {
+                width: 145px;
+                height: 120px;
+            }
+
+            .eye {
+                top: 34px;
+                width: 34px;
+                height: 34px;
+            }
+
+            .eye.left {
+                left: 31px;
+            }
+
+            .eye.right {
+                right: 31px;
+            }
+
+            .cheek {
+                top: 78px;
+            }
+
+            .smile {
+                top: 75px;
+            }
+
+            .robot-body {
+                width: 120px;
+                height: 125px;
+            }
+
+            .robot-body::before {
+                left: 25px;
+                width: 70px;
+                height: 70px;
+            }
+
+            .header {
+                padding-top: 9px;
+                padding-bottom: 7px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .messages {
+                padding-top: 8px;
+                padding-bottom: 8px;
+            }
+        }
+
+        /* ===== تنظیم مخصوص تبلت / نمایشگر ربات ===== */
+        @media (min-width: 900px) and (max-width: 1400px) {
+            .app { grid-template-columns: 330px 1fr; }
+            .robot-panel { padding: 14px 16px; }
+            .robot-title h2 { font-size: 28px; }
+            .robot-title p { font-size: 15px; }
+            .robot-face { width: 210px; height: 175px; }
+            .eye { top: 50px; width: 48px; height: 48px; }
+            .eye.left { left: 43px; }
+            .eye.right { right: 43px; }
+            .cheek { top: 108px; }
+            .smile { top: 103px; }
+            .robot-body { width: 175px; height: 195px; }
+            .robot-body::before { left: 35px; width: 105px; height: 110px; }
+            .robot-body::after { font-size: 14px; }
+            .online { font-size: 14px; padding: 10px 16px; }
+            .header { padding: 18px 28px 12px; }
+            .header h1 { font-size: 34px; }
+            .header p { font-size: 16px; }
+            #status { font-size: 16px; padding: 8px 28px; }
+            .messages { padding: 18px 28px; }
+            .message { font-size: 19px; line-height: 1.9; padding: 15px 18px; max-width: 76%; }
+            .avatar { width: 46px; height: 40px; }
+            .controls { padding: 14px 24px 16px; }
+            #startBtn, #stopBtn { min-width: 190px; font-size: 18px; padding: 14px 20px; }
+            .wave { height: 42px; }
+            #messageInput { font-size: 17px; padding: 14px 16px; }
+            .send-btn { width: 58px; font-size: 20px; }
+        }
+/* ==================================================
+   FIX نهایی نمایشگر ربات - نسخه اصلاح‌شده
+   ================================================== */
+
+/* ارتفاع واقعی viewport را JS در --app-height قرار می‌دهد.
+   این کار مشکل Chrome/Android و نوار پایین ربات را دور می‌زند. */
+html, body {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+body {
+    position: fixed !important;
+    inset: 0 !important;
+}
+
+.app {
+    width: 100% !important;
+    height: var(--app-height, 100vh) !important;
+    max-height: var(--app-height, 100vh) !important;
+    min-height: 0 !important;
+    grid-template-columns: 250px minmax(0, 1fr) !important;
+    overflow: hidden !important;
+}
+
+.chat-panel {
+    height: 100% !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+}
+
+.header {
+    flex: 0 0 auto !important;
+    padding: 7px 18px 4px !important;
+}
+.header h1 { font-size: 22px !important; }
+.header p { margin: 2px 0 0 !important; font-size: 11px !important; }
+.mini-bot { width: 45px !important; height: 37px !important; }
+
+#status {
+    flex: 0 0 auto !important;
+    min-height: 22px !important;
+    padding: 3px 18px !important;
+    font-size: 11px !important;
+}
+
+.messages {
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    padding: 6px 18px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+.message {
+    max-width: 78% !important;
+    padding: 7px 11px !important;
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+}
+.message-row { margin-bottom: 6px !important; }
+
+/* نوار کنترل و تایپ حتماً داخل viewport می‌ماند */
+.controls {
+    flex: 0 0 105px !important;
+    height: 105px !important;
+    min-height: 105px !important;
+    padding: 4px 14px 6px !important;
+    background: #fff !important;
+    border-top: 1px solid #dfe5ec !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 9999 !important;
+}
+.voice-controls {
+    height: 45px !important;
+    margin: 0 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+#startBtn, #stopBtn {
+    height: 41px !important;
+    min-width: 160px !important;
+    padding: 4px 13px !important;
+    font-size: 14px !important;
+}
+.wave { height: 27px !important; }
+
+#chatForm {
+    display: flex !important;
+    width: 100% !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    gap: 8px !important;
+    background: #fff !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+#messageInput {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 43px !important;
+    padding: 4px 12px !important;
+    font-size: 14px !important;
+    background: #fff !important;
+    border: 1px solid #bfc9d6 !important;
+}
+.send-btn {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex: 0 0 52px !important;
+    width: 52px !important;
+    height: 43px !important;
+    font-size: 19px !important;
+}
+
+.robot-panel {
+    padding: 5px 10px !important;
+    justify-content: flex-start !important;
+    overflow: hidden !important;
+}
+.robot-title h2 { font-size: 19px !important; }
+.robot-title p { margin: 2px 0 4px !important; font-size: 10px !important; }
+.robot-face { width: 125px !important; height: 104px !important; }
+.eye { top: 29px !important; width: 31px !important; height: 31px !important; }
+.eye.left { left: 27px !important; }
+.eye.right { right: 27px !important; }
+.cheek { top: 68px !important; }
+.smile { top: 66px !important; }
+.robot-body { width: 104px !important; height: 110px !important; margin-top: -2px !important; }
+.robot-body::before { top: 11px !important; left: 21px !important; width: 62px !important; height: 63px !important; }
+.robot-body::after { bottom: 10px !important; font-size: 9px !important; }
+.online { margin-top: 4px !important; padding: 4px 7px !important; font-size: 9px !important; }
+
+/* رزرو چند پیکسل برای نوار سیستم در دستگاه‌های لمسی */
+@media (pointer: coarse) {
+    .app {
+        height: calc(var(--app-height, 100vh) - 8px) !important;
+        max-height: calc(var(--app-height, 100vh) - 8px) !important;
+    }
+}
+
+</style>
+    
+
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <aside class="robot-panel">
+
+        <div class="robot-title">
+            <h2>دستیار هوشمند</h2>
+            <p>راهنمای محصولات HTN HOME</p>
+        </div>
+
+        <div class="robot-face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+
+            <div class="cheek left"></div>
+            <div class="cheek right"></div>
+
+            <div class="smile"></div>
+        </div>
+
+        <div class="robot-body"></div>
+
+        <div class="online">
+            <span class="online-dot"></span>
+            آنلاین و آماده پاسخگویی
+        </div>
+
+    </aside>
+
+
+    <main class="chat-panel">
+
+        <div class="header">
+
+            <div>
+                <h1>دستیار فروش هوشمند</h1>
+                <p>راهنمای هوشمند محصولات HTN HOME</p>
+            </div>
+
+            <div class="mini-bot"></div>
+
+        </div>
+
+
+        <div id="status">
+            برای شروع، دکمه «شروع گفتگو» را بزنید
+        </div>
+
+
+        <div class="messages" id="messages">
+
+            <div class="message-row bot">
+
+                <div class="message bot">
+                    سلام، خوش اومدید 🌷
+                    <br>
+                    من دستیار فروش هوشمند HTN HOME هستم.
+                    <br>
+                    دنبال چه محصولی هستید؟
+                </div>
+
+                <div class="avatar"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="controls">
+
+            <div class="voice-controls">
+
+                <button id="startBtn" type="button">
+                    🎤 شروع گفتگو
+                </button>
+
+                <button id="stopBtn" type="button">
+                    ⏹ توقف گفتگو
+                </button>
+
+                <div class="wave"></div>
+
+            </div>
+
+
+            <form id="chatForm">
+
+                <input
+                    id="messageInput"
+                    type="text"
+                    placeholder="مثلاً: سطل زباله هوشمند سفید دارید؟"
+                    autocomplete="off"
+                >
+
+                <button class="send-btn" type="submit">
+                    ➤
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+
+/* ارتفاع واقعی فضای قابل مشاهده Chrome/Android */
+function setRealViewportHeight() {
+    const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+    document.documentElement.style.setProperty(
+        "--app-height",
+        Math.floor(viewportHeight) + "px"
+    );
+}
+
+setRealViewportHeight();
+window.addEventListener("resize", setRealViewportHeight);
+window.addEventListener("orientationchange", () => {
+    setTimeout(setRealViewportHeight, 150);
+});
+if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", setRealViewportHeight);
+}
+
+
+const messages = document.getElementById("messages");
+const statusBox = document.getElementById("status");
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+
+const chatForm = document.getElementById("chatForm");
+const messageInput = document.getElementById("messageInput");
+
+
+let conversationActive = false;
+let recognizing = false;
+let processing = false;
+
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+let recognition = null;
+
+
+/* افزودن پیام */
+
+function addMessage(text, type) {
+
+    const row = document.createElement("div");
+
+    row.className = "message-row " + type;
+
+
+    const bubble = document.createElement("div");
+
+    bubble.className = "message " + type;
+    bubble.textContent = text;
+
+
+    if (type === "bot") {
+
+        const avatar = document.createElement("div");
+
+        avatar.className = "avatar";
+
+        row.appendChild(bubble);
+        row.appendChild(avatar);
+
+    } else {
+
+        row.appendChild(bubble);
+
+    }
+
+
+    messages.appendChild(row);
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+
+/* شروع گوش دادن */
+
+function startListening() {
+
+    if (
+        !conversationActive ||
+        processing ||
+        recognizing ||
+        !recognition
+    ) {
+        return;
+    }
+
+
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+}
+
+
+/* ارسال پیام */
+
+async function sendMessage(text) {
+
+    text = text.trim();
+
+    if (!text) {
+        return;
+    }
+
+
+    processing = true;
+
+
+    if (recognition && recognizing) {
+
+        try {
+            recognition.stop();
+        } catch (error) {}
+
+    }
+
+
+    statusBox.textContent =
+        "🤖 در حال بررسی سؤال...";
+
+
+    addMessage(text, "user");
+
+
+    try {
+
+        const response = await fetch(
+            "/api/chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    message: text
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Chat API error: " +
+                response.status
+            );
+
+        }
+
+
+        const data = await response.json();
+
+        const botText = data.response;
+
+
+        addMessage(botText, "bot");
+
+
+        statusBox.textContent =
+            "🔊 ربات در حال صحبت است...";
+
+
+        const speakResponse = await fetch(
+            "/api/speak",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    text: botText
+                })
+            }
+        );
+
+
+        if (!speakResponse.ok) {
+            console.log(
+                "Speak API error:",
+                speakResponse.status
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusBox.textContent =
+            "❌ خطا در ارتباط با سیستم";
+
+    }
+
+
+    processing = false;
+
+
+    if (conversationActive) {
+
+        statusBox.textContent =
+            "🎤 منتظر صحبت شما هستم...";
+
+        setTimeout(
+            startListening,
+            700
+        );
+
+    }
+}
+
+
+/* Speech Recognition */
+
+if (SpeechRecognition) {
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = "fa-IR";
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.maxAlternatives = 1;
+
+
+    recognition.onstart = () => {
+
+        recognizing = true;
+
+        statusBox.textContent =
+            "🎤 دارم گوش می‌دم...";
+
+        startBtn.classList.add(
+            "listening"
+        );
+
+    };
+
+
+    recognition.onresult = async (event) => {
+
+        const text =
+            event.results[0][0].transcript;
+
+
+        messageInput.value = text;
+
+
+        statusBox.textContent =
+            "✅ شنیدم: " + text;
+
+
+        await sendMessage(text);
+
+
+        messageInput.value = "";
+
+    };
+
+
+    recognition.onerror = (event) => {
+
+        console.log(
+            "Speech error:",
+            event.error
+        );
+
+
+        if (event.error === "not-allowed") {
+
+            conversationActive = false;
+
+            startBtn.style.display =
+                "inline-block";
+
+            stopBtn.style.display =
+                "none";
+
+            statusBox.textContent =
+                "❌ اجازه دسترسی به میکروفن داده نشده.";
+
+        }
+
+    };
+
+
+    recognition.onend = () => {
+
+        recognizing = false;
+
+        startBtn.classList.remove(
+            "listening"
+        );
+
+
+        if (
+            conversationActive &&
+            !processing
+        ) {
+
+            setTimeout(
+                startListening,
+                700
+            );
+
+        }
+
+    };
+
+}
+
+
+/* شروع گفتگو */
+
+startBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!SpeechRecognition) {
+
+            alert(
+                "مرورگر این دستگاه قابلیت تشخیص گفتار را پشتیبانی نمی‌کند."
+            );
+
+            return;
+
+        }
+
+
+        conversationActive = true;
+
+
+        startBtn.style.display =
+            "none";
+
+        stopBtn.style.display =
+            "inline-block";
+
+
+        statusBox.textContent =
+            "🎤 منتظر صحبت شما هستم...";
+
+
+        startListening();
+
+    }
+);
+
+
+/* توقف */
+
+stopBtn.addEventListener(
+    "click",
+    () => {
+
+        conversationActive = false;
+
+
+        if (recognition) {
+
+            try {
+                recognition.stop();
+            } catch (error) {}
+
+        }
+
+
+        startBtn.style.display =
+            "inline-block";
+
+        stopBtn.style.display =
+            "none";
+
+
+        statusBox.textContent =
+            "گفتگو متوقف شد.";
+
+    }
+);
+
+
+/* ارسال تایپی */
+
+chatForm.addEventListener(
+    "submit",
+    async (event) => {
+
+        event.preventDefault();
+
+
+        const text =
+            messageInput.value;
+
+
+        messageInput.value = "";
+
+
+        await sendMessage(text);
+
+    }
+);
+
+</script>
+
+</body>
+</html>

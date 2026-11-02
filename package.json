@@ -1,0 +1,10 @@
+{
+  "name": "timo-browser-checks",
+  "private": true,
+  "scripts": {
+    "test": "node tests/test_browser.cjs && node tests/test_microphone.cjs && node tests/test_agent_browser.cjs && node tests/test_agent_host_browser.cjs"
+  },
+  "devDependencies": {
+    "jsdom": "26.1.0"
+  }
+}

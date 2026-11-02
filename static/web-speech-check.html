@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>تیمو | آزمایش گفتار مرورگر</title>
+<style>
+:root{font-family:Tahoma,Arial,sans-serif;color:#edf3f9;background:#101820;line-height:1.9}
+*{box-sizing:border-box}body{margin:0;padding:24px 16px}main{max-width:860px;margin:auto}
+h1{font-size:clamp(23px,4vw,34px);line-height:1.5;margin:8px 0}h2{font-size:17px;margin:0 0 10px}
+p{margin:8px 0;color:#b9c9d7}.label{color:#6de1b5;font-size:13px;letter-spacing:.04em}
+.panel{background:#192530;border:1px solid #344654;border-radius:16px;padding:20px;margin-top:18px}
+.badge{display:inline-block;border:1px solid #547183;border-radius:30px;padding:3px 12px;font-size:13px;margin-top:10px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 6px}button{border:1px solid #526675;border-radius:9px;padding:11px 18px;background:#283b4a;color:#fff;font:inherit;cursor:pointer}
+button.primary{background:#70e0b5;color:#10261c;border-color:#70e0b5;font-weight:bold}button:disabled{opacity:.4;cursor:default}button:focus-visible,textarea:focus-visible{outline:3px solid #d9bc72;outline-offset:3px}
+textarea{display:block;width:100%;min-height:85px;resize:vertical;background:#101c26;color:#edf3f9;border:1px solid #4d6576;border-radius:9px;padding:12px;font:inherit;margin-top:8px}
+.result{min-height:66px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:21px;color:#f4f8fc;padding:9px 0}
+#interim{color:#a4bdce;font-size:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{padding:12px;background:#101c26;border-radius:9px}
+.metric span{display:block;font-size:12px;color:#a9bdcc}.metric strong{font-size:20px;font-weight:normal}
+.small{font-size:13px}.error{color:#ffb5aa}pre{background:#101c26;border-radius:9px;padding:12px;overflow:auto;font:12px/1.7 monospace;direction:ltr;text-align:left;max-height:260px;white-space:pre-wrap;overflow-wrap:anywhere}
+details{margin-top:15px}summary{cursor:pointer;color:#c5d7e5}code{direction:ltr;unicode-bidi:embed;font-size:.95em}a{color:#7ee5bc}footer{font-size:12px;text-align:center;margin:24px 0;color:#9aafbf}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.panel{padding:16px}body{padding:15px 11px}.actions button{flex:1;font-size:14px}}
+</style>
+</head>
+<body><main>
+<div class="label">TIMO · SPEECH CHECK</div>
+<h1>گفتار فارسی، با موتور مرورگر</h1>
+<p>یک آزمایش مستقل برای مقایسهٔ متن و زمان دریافت نتیجه. این صفحه به چت یا حرکت ربات فرمان نمی‌دهد.</p>
+<div id="support" class="badge" role="status">در حال بررسی مرورگر…</div>
+<section class="panel">
+<h2>۱. جملهٔ آزمایش</h2>
+<label for="reference">پیش از شروع، جمله‌ای را که می‌خواهی بگویی بنویس (اختیاری).</label>
+<textarea id="reference" placeholder="مثلاً: سلام، خوبی؟ اوضاع چطوره؟" spellcheck="false"></textarea>
+<p class="small">متن مرجع باید دقیقاً حرف واقعی تو باشد. اگر موقع گفتن جمله را عوض کردی، نمونه را تکرار کن.</p>
+<div class="actions">
+<button id="start" class="primary" disabled>شروع شنیدن</button>
+<button id="stop" disabled>پایان صحبت</button>
+<button id="cancel" disabled>لغو آزمایش</button>
+</div>
+<p id="status" role="status" aria-live="polite">برای شروع، اجازهٔ میکروفن را تأیید کن.</p>
+<p class="small">زبان درخواست: <code>fa-IR</code>. مرورگر ممکن است صدا را برای تشخیص به سرویس خودش بفرستد؛ این آزمایش حالت آفلاین را تضمین نمی‌کند.</p>
+</section>
+<section class="panel">
+<h2>۲. متن شنیده‌شده</h2>
+<p class="small">متن موقت؛ ممکن است تا نهایی‌شدن تغییر کند:</p>
+<div id="interim" class="result" aria-live="polite">—</div>
+<p class="small">متن نهایی؛ بدون بازنویسی با مدل چت:</p>
+<div id="final" class="result" aria-live="polite">—</div>
+<div class="grid">
+<div class="metric"><span>اولین متن از شروع درخواست</span><strong id="firstMs">—</strong></div>
+<div class="metric"><span>آخرین متن نهایی از شروع درخواست</span><strong id="finalMs">—</strong></div>
+<div class="metric"><span>خطای واژه‌ها نسبت به متن مرجع</span><strong id="wer">—</strong></div>
+</div>
+<p class="small">زمان‌ها از کلیک «شروع» محاسبه می‌شوند و مدت حرف‌زدن و اجازهٔ میکروفن را هم شامل می‌شوند؛ تأخیر کل چت یا تأخیر خالص پس از پایان گفتار نیستند. زمان رویدادهای مرورگر در گزارش ثبت می‌شود.</p>
+</section>
+<section class="panel">
+<h2>۳. گزارش آزمایش</h2>
+<p>همین جمله را ۳ بار روی ربات و سپس روی لپ‌تاپ امتحان کن. صدای پاسخ ربات و صفحهٔ چت دیگر را هنگام تست متوقف کن.</p>
+<div class="actions"><button id="download" disabled>دانلود گزارش JSON</button><button id="clear" disabled>پاک‌کردن گزارش‌ها</button></div>
+<p id="count" class="small">هنوز آزمایشی انجام نشده است.</p>
+<details><summary>مشخصات مرورگر و رخدادهای آخرین آزمایش</summary><pre id="events"></pre></details>
+<details><summary>اگر اجرا نشد چه کار کنم؟</summary>
+<p class="small">این فایل را در پوشهٔ <code>static</code> پروژه بگذار و با سرور موجود باز کن:
+<code>http://localhost:8000/static/web-speech-check.html</code>.
+روی ربات، همان اتصال <code>adb reverse tcp:8000 tcp:8000</code> باید برقرار باشد.
+فایل را مستقیم با دوبار کلیک اجرا نکن.</p>
+<p class="small">وجود رابط SpeechRecognition به‌تنهایی پشتیبانی فارسی یا دسترسی شبکه را ثابت نمی‌کند. اگر در WebView کار نکرد، همین نشانی را در Chrome خود ربات امتحان کن و هر دو نتیجه را جدا ثبت کن.</p>
+<p class="small">اگر متن نهایی نیامد، کد خطا را بفرست. این صفحه خطا را با متن حدسی جایگزین نمی‌کند و ضبط خودکار را دوباره راه نمی‌اندازد.</p>
+</details>
+</section>
+<footer>آزمایش جدا از Groq، n8n و LangGraph · نسخهٔ ۱ · ۱۸ اکتبر ۲۰۲۶</footer>
+</main>
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const environment = {
+    userAgent: navigator.userAgent, language: navigator.language,
+    origin: location.origin, pathname: location.pathname,
+    secureContext: window.isSecureContext, onlineAtLoad: navigator.onLine,
+    recognitionConstructor: window.SpeechRecognition ? 'SpeechRecognition' :
+      window.webkitSpeechRecognition ? 'webkitSpeechRecognition' : null,
+    androidBridgePresent: !!window.AndroidRobot,
+    requestedLanguage: 'fa-IR', version: 1
+  };
+  const sessions = [];
+  let active = null;
+  const canStart = !!Recognition && window.isSecureContext && /^https?:$/.test(location.protocol);
+  const errors = {
+    'not-allowed': 'اجازهٔ میکروفن یا تشخیص گفتار داده نشده است؛ مجوز سایت و تنظیمات مرورگر را بررسی کن.',
+    'service-not-allowed': 'مرورگر اجازهٔ استفاده از سرویس تشخیص گفتار را نمی‌دهد.',
+    'audio-capture': 'مرورگر نتوانست ورودی میکروفن بگیرد؛ برنامهٔ دیگری ممکن است در حال استفاده از آن باشد.',
+    'no-speech': 'در این نوبت گفتاری شناسایی نشد؛ با یک جملهٔ کوتاه دوباره امتحان کن.',
+    'network': 'اتصال مرورگر به سرویس گفتار برقرار نشد؛ این خطا به‌تنهایی مشکل ضبط یا ضعف فارسی را ثابت نمی‌کند.',
+    'language-not-supported': 'این سرویس یا مرورگر زبان فارسی درخواستی را نپذیرفت.',
+    'aborted': 'تشخیص گفتار لغو شد.'
+  };
+  function normalized(text) {
+    return text.replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/ۀ/g, 'ه')
+      .replace(/\u200c/g, ' ').replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
+  }
+  function distance(ref, hyp) {
+    let row = Array.from({length: hyp.length + 1}, (_, i) => i);
+    ref.forEach((word, i) => {
+      const next = [i + 1];
+      hyp.forEach((other, j) => next.push(Math.min(next[j] + 1, row[j + 1] + 1, row[j] + (word === other ? 0 : 1))));
+      row = next;
+    });
+    return row[hyp.length];
+  }
+  function wordScore(ref, hyp) {
+    ref = normalized(ref);
+    if (!ref) return null;
+    const words = ref.split(' '), h = normalized(hyp);
+    const count = distance(words, h ? h.split(' ') : []);
+    return {wordErrors: count, referenceWords: words.length, wer: count / words.length};
+  }
+  function elapsed(session) { return Math.round(performance.now() - session.clock); }
+  function record(session, type, details = {}) {
+    session.report.events.push({type, msFromStart: elapsed(session), ...details});
+    renderLog(session);
+  }
+  function renderLog(session) {
+    $('events').textContent = JSON.stringify({environment, latest: session ? session.report : null}, null, 2);
+  }
+  function controls() {
+    $('start').disabled = !canStart || !!active;
+    $('stop').disabled = !active || active.stopping;
+    $('cancel').disabled = !active;
+    $('reference').disabled = !!active;
+    $('download').disabled = !sessions.length || !!active;
+    $('clear').disabled = !sessions.length || !!active;
+    $('count').textContent = sessions.length ? `${sessions.length} آزمایش ثبت شده؛ گزارش‌ها فقط در حافظهٔ همین صفحه‌اند تا دانلودشان کنی.` : 'هنوز آزمایشی انجام نشده است.';
+  }
+  function showStatus(message, failed = false) {
+    $('status').textContent = message;
+    $('status').className = failed ? 'error' : '';
+  }
+  function finish(session, status) {
+    if (active !== session) return;
+    clearTimeout(session.watchdog);
+    session.report.status = status;
+    session.report.finishedAt = new Date().toISOString();
+    if (status === 'completed' && normalized(session.report.reference)) {
+      session.report.score = wordScore(session.report.reference, session.report.finalText);
+      $('wer').textContent = (100 * session.report.score.wer).toFixed(1) + '٪';
+    }
+    active = null;
+    controls(); renderLog(session);
+  }
+  $('start').addEventListener('click', () => {
+    if (!canStart || active) return;
+    const report = {id: sessions.length + 1, startedAt: new Date().toISOString(),
+      reference: $('reference').value.trim(), finalText: '', interimText: '', status: 'starting',
+      firstTextMs: null, lastFinalMs: null, events: [], score: null};
+    const session = {report, clock: performance.now(), stopping: false, watchdog: null, recognition: null, hadError: false};
+    active = session; sessions.push(report);
+    for (const id of ['interim', 'final', 'firstMs', 'finalMs', 'wer']) $(id).textContent = '—';
+    controls(); showStatus('در انتظار شروع سرویس و اجازهٔ میکروفن…');
+    try {
+      const recognition = new Recognition();
+      session.recognition = recognition;
+      recognition.lang = 'fa-IR';
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      recognition.onstart = () => {
+        if (active !== session) return;
+        report.status = 'listening'; record(session, 'start'); showStatus('گوش می‌دهم؛ جملهٔ آزمایش را بگو.');
+      };
+      for (const type of ['audiostart', 'audioend', 'soundstart', 'soundend', 'speechstart', 'speechend']) {
+        recognition['on' + type] = () => { if (active === session) record(session, type); };
+      }
+      recognition.onresult = event => {
+        if (active !== session || session.hadError) return;
+        const finalParts = [], interimParts = [], results = [];
+        // Rebuild from the full result list: interim revisions must not duplicate words.
+        for (let i = 0; i < event.results.length; i++) {
+          const item = event.results[i];
+          const text = item[0]?.transcript || '';
+          (item.isFinal ? finalParts : interimParts).push(text);
+          results.push({isFinal: item.isFinal, text,
+            reportedConfidence: Number.isFinite(item[0]?.confidence) ? item[0].confidence : null});
+        }
+        report.finalText = finalParts.join(' ');
+        report.interimText = interimParts.join(' ');
+        const ms = elapsed(session);
+        if (report.firstTextMs === null && (report.finalText || report.interimText)) report.firstTextMs = ms;
+        if (finalParts.some(text => text.trim())) report.lastFinalMs = ms;
+        $('interim').textContent = report.interimText || '—';
+        $('final').textContent = report.finalText || '—';
+        $('firstMs').textContent = report.firstTextMs === null ? '—' : `${report.firstTextMs} ms`;
+        $('finalMs').textContent = report.lastFinalMs === null ? '—' : `${report.lastFinalMs} ms`;
+        record(session, 'result', {results});
+        showStatus(report.finalText ? 'متن نهایی دریافت شد؛ منتظر پایان این نوبت…' : 'متن موقت دریافت شد…');
+      };
+      recognition.onerror = event => {
+        if (active !== session) return;
+        session.hadError = true;
+        report.error = event.error || 'unknown';
+        record(session, 'error', {code: report.error});
+        showStatus(`${errors[report.error] || 'تشخیص گفتار ناموفق بود.'} (${report.error})`, true);
+        finish(session, 'error');
+        try { recognition.abort(); } catch (_) { /* already ended */ }
+      };
+      recognition.onnomatch = () => { if (active === session) record(session, 'nomatch'); };
+      recognition.onend = () => {
+        if (active !== session) return;
+        record(session, 'end');
+        const hasFinal = report.finalText.trim().length > 0;
+        showStatus(hasFinal ? 'این نوبت تمام شد. برای مقایسه، جمله را دوباره امتحان کن.' :
+          'سرویس تمام شد اما متن نهایی نداد؛ متن موقت را نتیجهٔ قطعی حساب نمی‌کنیم.', !hasFinal);
+        finish(session, hasFinal ? 'completed' : 'no_final_result');
+      };
+      record(session, 'start_requested');
+      recognition.start();
+      session.watchdog = setTimeout(() => {
+        if (active !== session) return;
+        record(session, 'test_timeout');
+        showStatus('این آزمایش بعد از ۴۵ ثانیه بدون پایان سرویس متوقف شد؛ گزارش را نگه دار.', true);
+        finish(session, 'timeout');
+        try { recognition.abort(); } catch (_) { /* nothing active */ }
+      }, 45000);
+    } catch (error) {
+      report.error = error.name || 'start_failed';
+      record(session, 'start_error', {code: report.error});
+      showStatus(`شروع تشخیص ممکن نشد: ${report.error}`, true);
+      finish(session, 'error');
+    }
+  });
+  $('stop').addEventListener('click', () => {
+    if (!active || active.stopping) return;
+    const session = active;
+    session.stopping = true; controls(); record(session, 'stop_requested');
+    showStatus('منتظر متن نهایی سرویس…');
+    try { session.recognition.stop(); }
+    catch (error) { record(session, 'stop_error', {code: error.name}); finish(session, 'error'); }
+  });
+  $('cancel').addEventListener('click', () => {
+    if (!active) return;
+    const session = active;
+    record(session, 'cancel_requested'); finish(session, 'cancelled');
+    try { session.recognition?.abort(); } catch (_) { /* nothing active */ }
+    showStatus('آزمایش لغو شد؛ نتیجهٔ آن در مقایسهٔ دقت شمرده نمی‌شود.');
+  });
+  $('download').addEventListener('click', () => {
+    if (active || !sessions.length) return;
+    const blob = new Blob([JSON.stringify({environment, sessions}, null, 2)], {type: 'application/json;charset=utf-8'});
+    const url = URL.createObjectURL(blob), link = document.createElement('a');
+    link.href = url; link.download = 'timo-web-speech-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json';
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  });
+  $('clear').addEventListener('click', () => {
+    if (active) return;
+    sessions.length = 0;
+    for (const id of ['interim', 'final', 'firstMs', 'finalMs', 'wer']) $(id).textContent = '—';
+    controls(); renderLog(null); showStatus('گزارش‌ها پاک شدند.');
+  });
+  window.addEventListener('pagehide', () => {
+    if (!active) return;
+    const session = active;
+    record(session, 'page_hidden'); finish(session, 'cancelled');
+    try { session.recognition?.abort(); } catch (_) { /* nothing active */ }
+  });
+  $('support').textContent = !Recognition ? 'رابط تشخیص گفتار در این مرورگر موجود نیست' :
+    !canStart ? 'صفحه را با localhost یا HTTPS باز کن' :
+    'رابط موجود است؛ پشتیبانی فارسی و اتصال سرویس باید آزمایش شود';
+  if (!canStart) showStatus(!Recognition ? 'این نتیجه را ثبت کن؛ همین صفحه را در Chrome خود ربات هم آزمایش کن.' :
+    'فایل را داخل static پروژه بگذار و نشانی localhost را باز کن.', true);
+  controls(); renderLog(null);
+})();
+</script></body></html>

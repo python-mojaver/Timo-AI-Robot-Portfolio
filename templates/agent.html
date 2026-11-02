@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>آموزش تیمو</title><link rel="stylesheet" href="/static/agent.css"></head>
+<body class="manager-page">
+<header><div><span class="eyebrow">HTN HOME · TIMO</span><h1>آموزش ایجنت</h1><p>اطلاعات، اتاق‌ها و قابلیت‌های تیمو را مدیریت کنید.</p></div><a href="/">بازگشت به گفتگو ←</a></header>
+<main>
+  <section class="card login"><h2>دسترسی مدیر</h2><p>کلید مدیر را از اجرای <code>setup_agent.py</code> روی رایانه بگیرید.</p>
+    <form id="managerLogin"><input id="managerKey" type="password" autocomplete="off" placeholder="کلید مدیر" required><button>ورود</button><button type="button" id="managerLogout" class="secondary">خروج</button></form>
+    <p id="managerStatus" role="status">برای مدیریت، ابتدا وارد شوید.</p>
+  </section>
+  <div id="managerContent" hidden>
+    <form id="sharedMapForm" class="card">
+      <h2>نقشهٔ مشترک مجموعه</h2>
+      <p>نام نقشهٔ فعال را یک‌بار اینجا ذخیره کنید؛ اپ ربات پیش از هر حرکت آن را از همین سرور دریافت می‌کند.</p>
+      <label>نام نقشهٔ مشترک<input id="sharedMapName" maxlength="120" required placeholder="HTN Home"></label>
+      <button>ذخیره نقشهٔ مشترک</button>
+      <p id="sharedMapStatus" role="status"></p>
+      <small>مختصات و نام نقشهٔ ثبت‌شدهٔ اتاق‌های موجود تغییر نمی‌کنند. مقصد باید روی همین نقشه باشد؛ تغییر این تنظیم، نقشهٔ AlphaMap را جابه‌جا نمی‌کند.</small>
+    </form>
+    <nav class="tabs"><button data-tab="memories" class="selected">حافظه و یادگیری</button><button data-tab="rooms">اتاق‌ها</button><button data-tab="skills">قابلیت‌ها</button></nav>
+    <section data-section="memories" class="workspace">
+      <form id="memoryForm" class="card"><h2>به تیمو یاد بده</h2><input name="id" type="hidden">
+        <label>نوع اطلاعات<select name="kind"><option value="fact">اطلاعات و راهنما</option><option value="qa">سؤال و پاسخ مشخص</option></select></label>
+        <label>عنوان یا سؤال<input name="title" maxlength="200" required placeholder="مثلاً ساعت کاری شرکت"></label>
+        <label>اطلاعات یا پاسخ<textarea name="body" maxlength="8000" rows="7" required placeholder="مثلاً شنبه تا چهارشنبه، ۹ صبح تا ۵ عصر"></textarea></label>
+        <div class="actions"><button>ذخیره در حافظه</button><button type="reset" class="secondary">مورد جدید</button></div>
+        <small>اطلاعات در این سرور می‌ماند و در پاسخ‌های گفتگو استفاده می‌شود. برای اصلاح پاسخ، همین مورد را ویرایش کنید.</small>
+      </form><div id="memoryList" class="records"></div>
+    </section>
+    <section data-section="rooms" class="workspace" hidden>
+      <form id="roomForm" class="card"><h2>یک اتاق معرفی کن</h2><input name="id" type="hidden">
+        <label>نام اتاق<input name="name" maxlength="120" required placeholder="اتاق مدیریت"></label>
+        <label>نام‌های جایگزین، هر کدام در یک خط<textarea name="aliases" rows="2" placeholder="اتاق مدیر&#10;اتاق نمونه"></textarea></label>
+        <label>نقشهٔ این مقصد (محل ثبت مختصات)<input name="map_name" maxlength="120" placeholder="نام دقیق نقشه"></label>
+        <div class="pose-grid"><label>X<input name="x" type="number" step="any" required></label><label>Y<input name="y" type="number" step="any" required></label><label>Z<input name="z" type="number" step="any" value="0" required></label><label>Rotation / رادیان<input name="rotation" type="number" step="any" min="-6.283185" max="6.283185" required></label></div>
+        <button type="button" id="capturePosition" class="secondary">دریافت موقعیت فعلی از ربات</button>
+        <p id="poseStatus" role="status">روی رایانه، مختصات را از AlphaMap وارد کنید. روی ربات می‌توانید موقعیت را دریافت کنید.</p>
+        <label class="check"><input name="enabled" type="checkbox">موقعیت این اتاق روی همین نقشه بررسی شده و مقصد فعال است.</label>
+        <div class="actions"><button>ذخیره اتاق</button><button type="reset" class="secondary">اتاق جدید</button></div>
+        <small>این کار نام مقصد را ثبت می‌کند. نقشه‌برداری و تغییر نقشه توسط AlphaMap انجام می‌شود.</small>
+      </form><div id="roomList" class="records"></div>
+    </section>
+    <section data-section="skills" class="workspace" hidden>
+      <form id="skillForm" class="card"><h2>یک قابلیت اضافه کن</h2><input name="id" type="hidden">
+        <label>نام قابلیت<input name="name" required maxlength="120" placeholder="معرفی شرکت"></label>
+        <label>عبارت‌های فعال‌کننده، هر کدام در یک خط<textarea name="triggers" required rows="3" placeholder="شرکت رو معرفی کن&#10;درباره شرکت بگو"></textarea></label>
+        <label>کار تیمو<select name="kind" id="skillKind"><option value="reply">پاسخ مشخص بدهد</option><option value="navigate">به اتاق ثبت‌شده برود</option></select></label>
+        <label id="skillReplyLabel">پاسخ<textarea name="reply" rows="6" maxlength="8000"></textarea></label>
+        <label id="skillRoomLabel" hidden>اتاق مقصد<select name="room_id" id="skillRoom"></select></label>
+        <label class="check"><input name="enabled" type="checkbox" checked>قابلیت فعال است.</label>
+        <div class="actions"><button>ذخیره قابلیت</button><button type="reset" class="secondary">قابلیت جدید</button></div>
+        <small>عبارت باید دقیقاً گفته شود. اتصال به نرم‌افزار یا ابزار جدید، نیاز به افزودن اتصال در کد دارد.</small>
+      </form><div id="skillList" class="records"></div>
+    </section>
+  </div>
+</main>
+<script src="/static/agent-manager.js?v=sharedmap1" defer></script>
+</body></html>

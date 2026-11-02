@@ -1,0 +1,2 @@
+# Development checks only. No new runtime dependency is required by the agent.
+httpx>=0.28,<1

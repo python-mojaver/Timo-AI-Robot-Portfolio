@@ -1,0 +1,106 @@
+{
+  "name": "HTN Prime - General Conversation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "htn-prime-chat",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "prime-webhook",
+      "name": "Prime Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "htn-prime-chat"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.system_prompt + '\\n\\nتاریخچه گفتگو:\\n' + JSON.stringify($json.body.history || []) + '\\n\\nپیام فعلی کاربر:\\n' + $json.body.message }}"
+      },
+      "id": "prime-chain",
+      "name": "HTN Prime Conversation",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        260,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-flash-preview",
+        "options": {
+          "temperature": 0.4
+        }
+      },
+      "id": "prime-model",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        260,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { reply: $json.text || $json.output } }}",
+        "options": {}
+      },
+      "id": "prime-response",
+      "name": "Prime Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        540,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Prime Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTN Prime Conversation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HTN Prime Conversation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTN Prime Conversation": {
+      "main": [
+        [
+          {
+            "node": "Prime Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

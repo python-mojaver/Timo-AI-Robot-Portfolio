@@ -1,0 +1,3 @@
+# Runtime plus optional face-recognition integration; local STT is separate.
+-r requirements.txt
+-r requirements-vision-agent.txt
